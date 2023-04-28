@@ -10,6 +10,8 @@ const AuthenticationsService = require('./services/postgres/AuthenticationsServi
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
+const CacheService = require('./services/redis/CacheService');
+
 const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
@@ -31,9 +33,10 @@ const UsersService = require('./services/postgres/UsersService');
 const UsersValidator = require('./validator/users');
 
 const init = async () => {
+	const cacheService = new CacheService();
 	const authenticationsService = new AuthenticationsService();
-	const collaborationsService = new CollaborationsService();
-	const notesService = new NotesService(collaborationsService);
+	const collaborationsService = new CollaborationsService(cacheService);
+	const notesService = new NotesService(collaborationsService, cacheService);
 	const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
 	const usersService = new UsersService();
 
